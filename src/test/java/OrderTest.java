@@ -10,9 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import praktikum.client.OrderClient;
 import praktikum.client.UserClient;
-import praktikum.model.TestOrder;
-import praktikum.model.TestUser;
-import praktikum.model.TestUserGenerator;
+import praktikum.model.Order;
+import praktikum.model.User;
+import praktikum.model.UserGenerator;
 
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,9 +48,9 @@ public class OrderTest {
     @Test
     @DisplayName("Успешное создание заказа")
     public void orderSuccessfulCreation() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         ingredients = orderClient.getIngredients(3);
-        TestOrder order = new TestOrder(ingredients);
+        Order order = new Order(ingredients);
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -63,12 +63,8 @@ public class OrderTest {
     @Test
     @DisplayName("Cоздание заказа неавторизированным пользователем")
     public void orderCreationUnauthorizedFailed() {
-        TestUser user = TestUserGenerator.getRandom();
         ingredients = orderClient.getIngredients(3);
-        TestOrder order = new TestOrder(ingredients);
-
-        ValidatableResponse createResponse = userClient.create(user);
-        accessToken = createResponse.extract().path("accessToken");
+        Order order = new Order(ingredients);
 
         orderClient.createOrderUnauthorized(order)
                 .assertThat()
@@ -78,8 +74,8 @@ public class OrderTest {
     @Test
     @DisplayName("Создание заказа без ингридиентов")
     public void orderCreationWithoutIngredientsFailed() {
-        TestUser user = TestUserGenerator.getRandom();
-        TestOrder order = new TestOrder(ingredients);
+        User user = UserGenerator.getRandom();
+        Order order = new Order(ingredients);
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -97,9 +93,9 @@ public class OrderTest {
     @Test
     @DisplayName("Создание заказа с несуществующим ингридиентом")
     public void orderCreationWithNonExistentId() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         ingredients = new String[]{ingredientNonExistedId};
-        TestOrder order = new TestOrder(ingredients);
+        Order order = new Order(ingredients);
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -110,11 +106,11 @@ public class OrderTest {
     }
 
     @Test
-    @DisplayName("Получение информации о созданном заказе для авторизированного пользователя")
+    @DisplayName("Получение списка заказов пользователя с авторизацией")
     public void getOrdersOfUser() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         ingredients = orderClient.getIngredients(2);
-        TestOrder order = new TestOrder(ingredients);
+        Order order = new Order(ingredients);
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -129,14 +125,11 @@ public class OrderTest {
     }
 
     @Test
-    @DisplayName("Получение информации о созданном заказе для авторизированного пользователя")
+    @DisplayName("Получение списка заказов пользователя без авторизации")
     public void getUnauthorisedOrdersOfUser() {
-        TestUser user = TestUserGenerator.getRandom();
         ingredients = orderClient.getIngredients(4);
-        TestOrder order = new TestOrder(ingredients);
+        Order order = new Order(ingredients);
 
-        ValidatableResponse createResponse = userClient.create(user);
-        accessToken = createResponse.extract().path("accessToken");
         orderClient.createOrderUnauthorized(order);
 
         orderClient.getUnauthorisedOrdersOfUser()

@@ -3,19 +3,19 @@ package praktikum.client;
 import io.qameta.allure.Step;
 import io.restassured.response.ValidatableResponse;
 import praktikum.client.base.StellarBurgerRestClient;
-import praktikum.model.TestUser;
-import praktikum.model.TestUserUpdateEmail;
-import praktikum.model.TestUserUpdateName;
+import praktikum.model.User;
+import praktikum.model.UserUpdateEmail;
+import praktikum.model.UserUpdateName;
 
 import static io.restassured.RestAssured.given;
 public class UserClient extends StellarBurgerRestClient {
 
-    private static final String USER_CREATE_URI = BASE_URI + "auth/register";
-    private static final String USER_BASE_URI = BASE_URI + "auth/user";
+    private static final String USER_CREATE_URI = "auth/register";
+    private static final String USER_BASE_URI = "auth/user";
 
 
     @Step("Create user {user}")
-    public ValidatableResponse create(TestUser user) {
+    public ValidatableResponse create(User user) {
         return given()
                 .spec(getBaseReqSpec())
                 .body(user)
@@ -35,7 +35,7 @@ public class UserClient extends StellarBurgerRestClient {
     }
 
     @Step("Update email of authorized user")
-    public ValidatableResponse updateEmailAuthorized(String accessToken, TestUserUpdateEmail userUpdateEmail) {
+    public ValidatableResponse updateEmailAuthorized(String accessToken, UserUpdateEmail userUpdateEmail) {
         return given()
                 .spec(getBaseReqSpec())
                 .header("Authorization", accessToken)
@@ -45,7 +45,7 @@ public class UserClient extends StellarBurgerRestClient {
                 .then();
     }
     @Step("Update name of authorized user")
-    public ValidatableResponse updateNameAuthorized(String accessToken, TestUserUpdateName userUpdateName) {
+    public ValidatableResponse updateNameAuthorized(String accessToken, UserUpdateName userUpdateName) {
         return given()
                 .spec(getBaseReqSpec())
                 .header("Authorization", accessToken)
@@ -56,7 +56,7 @@ public class UserClient extends StellarBurgerRestClient {
     }
 
     @Step("Update email of unauthorized user")
-    public ValidatableResponse updateEmailUnauthorized(TestUserUpdateEmail userUpdateEmail) {
+    public ValidatableResponse updateEmailUnauthorized(UserUpdateEmail userUpdateEmail) {
         return given()
                 .spec(getBaseReqSpec())
                 .body(userUpdateEmail)
@@ -65,7 +65,7 @@ public class UserClient extends StellarBurgerRestClient {
                 .then();
     }
     @Step("Update name of unauthorized user")
-    public ValidatableResponse updateNameUnauthorized(TestUserUpdateName userUpdateEmail) {
+    public ValidatableResponse updateNameUnauthorized(UserUpdateName userUpdateEmail) {
         return given()
                 .spec(getBaseReqSpec())
                 .body(userUpdateEmail)

@@ -4,7 +4,7 @@ import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import praktikum.client.base.StellarBurgerRestClient;
-import praktikum.model.TestOrder;
+import praktikum.model.Order;
 
 import java.util.List;
 import java.util.Random;
@@ -13,11 +13,11 @@ import static io.restassured.RestAssured.given;
 
 public class OrderClient extends StellarBurgerRestClient {
 
-    private static final String ORDER_BASE_URL = BASE_URI + "orders";
-    private static final String INGREDIENT_BASE_URL = BASE_URI + "ingredients";
+    private static final String ORDER_BASE_URL = "orders";
+    private static final String INGREDIENT_BASE_URL = "ingredients";
     Random rand = new Random();
     @Step("Create order")
-    public ValidatableResponse createOrder(String accessToken, TestOrder order){
+    public ValidatableResponse createOrder(String accessToken, Order order){
         return given()
                 .spec(getBaseReqSpec())
                 .header("Authorization", accessToken)
@@ -28,7 +28,7 @@ public class OrderClient extends StellarBurgerRestClient {
     }
 
     @Step("Create order")
-    public ValidatableResponse createOrderUnauthorized(TestOrder order){
+    public ValidatableResponse createOrderUnauthorized(Order order){
         return given()
                 .spec(getBaseReqSpec())
                 .body(order)

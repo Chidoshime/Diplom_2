@@ -10,9 +10,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import praktikum.client.LoginClient;
 import praktikum.client.UserClient;
-import praktikum.model.TestUser;
-import praktikum.model.TestUserCredentialsData;
-import praktikum.model.TestUserGenerator;
+import praktikum.model.User;
+import praktikum.model.UserCredentialsData;
+import praktikum.model.UserGenerator;
 
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -46,12 +46,12 @@ public class LoginUserTest {
     @Test
     @DisplayName("Успешный логин под созданным пользователем")
     public void loginWithExistedUserIsSuccessful(){
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
 
-        loginClient.login(TestUserCredentialsData.from(user))
+        loginClient.login(UserCredentialsData.from(user))
                 .assertThat()
                 .statusCode(SC_OK)
                 .and()
@@ -64,13 +64,13 @@ public class LoginUserTest {
     @Test
     @DisplayName("Логин под созданным пользователем с неправильной почтой")
     public void loginWithExistedUserWithInvalidEmailFailed(){
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
         user.setEmail("");
 
-        loginClient.login(TestUserCredentialsData.from(user))
+        loginClient.login(UserCredentialsData.from(user))
                 .assertThat()
                 .statusCode(SC_UNAUTHORIZED)
                 .and()
@@ -82,13 +82,13 @@ public class LoginUserTest {
     @Test
     @DisplayName("Логин под созданным пользователем с неправильной почтой")
     public void loginWithExistedUserWithInvalidPasswordIsFailed(){
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
         user.setPassword("");
 
-        loginClient.login(TestUserCredentialsData.from(user))
+        loginClient.login(UserCredentialsData.from(user))
                 .assertThat()
                 .statusCode(SC_UNAUTHORIZED)
                 .and()

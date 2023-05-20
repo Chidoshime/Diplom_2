@@ -9,10 +9,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import praktikum.client.UserClient;
-import praktikum.model.TestUser;
-import praktikum.model.TestUserGenerator;
-import praktikum.model.TestUserUpdateEmail;
-import praktikum.model.TestUserUpdateName;
+import praktikum.model.User;
+import praktikum.model.UserGenerator;
+import praktikum.model.UserUpdateEmail;
+import praktikum.model.UserUpdateName;
 
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,7 +45,7 @@ public class UserTest {
     @Test
     @DisplayName("Создание пользователя с валидными данными")
     public void userCanBeCreatedWithValidData() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -58,9 +58,9 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("Создание пользователя с валидными данными")
+    @DisplayName("Создание пользователя с уже созданными учетными данными")
     public void userCantBeCreatedWithSameCredentials() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
@@ -77,7 +77,7 @@ public class UserTest {
     @Test
     @DisplayName("Создание пользователя без почты")
     public void userCantBeCreatedWithoutEmail() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         user.setEmail("");
 
         userClient.create(user)
@@ -93,7 +93,7 @@ public class UserTest {
     @Test
     @DisplayName("Создание пользователя без пароля")
     public void userCantBeCreatedWithoutPassword() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         user.setPassword("");
 
         userClient.create(user)
@@ -109,7 +109,7 @@ public class UserTest {
     @Test
     @DisplayName("Создание пользователя без имени")
     public void userCantBeCreatedWithoutName() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
         user.setName("");
 
         userClient.create(user)
@@ -125,13 +125,13 @@ public class UserTest {
     @Test
     @DisplayName("Изменение почты пользователя")
     public void userEmailChangedSuccessfully() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
 
         String newEmail = user.getEmail() + "n";
-        TestUserUpdateEmail userUpdateEmail = new TestUserUpdateEmail(newEmail);
+        UserUpdateEmail userUpdateEmail = new UserUpdateEmail(newEmail);
 
         userClient.updateEmailAuthorized(accessToken,userUpdateEmail)
                 .assertThat()
@@ -145,13 +145,13 @@ public class UserTest {
     @Test
     @DisplayName("Изменение имени пользователя")
     public void userNameChangedSuccessfully() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
 
         String newName = user.getName() + "New";
-        TestUserUpdateName userUpdateName = new TestUserUpdateName(newName);
+        UserUpdateName userUpdateName = new UserUpdateName(newName);
 
         userClient.updateNameAuthorized(accessToken, userUpdateName)
                 .assertThat()
@@ -165,13 +165,13 @@ public class UserTest {
     @Test
     @DisplayName("Изменение почты пользователя без авторизации")
     public void userEmailChangeWithoutAuthorizationFailed() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
 
         String newEmail = user.getEmail() + "n";
-        TestUserUpdateEmail userUpdateEmail = new TestUserUpdateEmail(newEmail);
+        UserUpdateEmail userUpdateEmail = new UserUpdateEmail(newEmail);
 
         userClient.updateEmailUnauthorized(userUpdateEmail)
                 .assertThat()
@@ -185,13 +185,13 @@ public class UserTest {
     @Test
     @DisplayName("Изменение имени пользователя без авторизации")
     public void userNameChangeWithoutAuthorizationFailed() {
-        TestUser user = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
 
         String newName = user.getName() + "New";
-        TestUserUpdateName userUpdateName = new TestUserUpdateName(newName);
+        UserUpdateName userUpdateName = new UserUpdateName(newName);
 
         userClient.updateNameUnauthorized(userUpdateName)
                 .assertThat()
@@ -203,16 +203,16 @@ public class UserTest {
     }
 
     @Test
-    @DisplayName("Изменение имени пользователя")
+    @DisplayName("Изменение почты пользователя на уже существующую")
     public void userEmailChangeToUsedFailed() {
-        TestUser user = TestUserGenerator.getRandom();
-        TestUser user2 = TestUserGenerator.getRandom();
+        User user = UserGenerator.getRandom();
+        User user2 = UserGenerator.getRandom();
 
         ValidatableResponse createResponse = userClient.create(user);
         accessToken = createResponse.extract().path("accessToken");
         ValidatableResponse createResponse2 = userClient.create(user2);
         String accessToken2 = createResponse2.extract().path("accessToken");
-        TestUserUpdateEmail userUpdateEmail = new TestUserUpdateEmail(user2.getEmail());
+        UserUpdateEmail userUpdateEmail = new UserUpdateEmail(user2.getEmail());
 
         ValidatableResponse emailUpdateResponce = userClient.updateEmailAuthorized(accessToken, userUpdateEmail);
         userClient.delete(accessToken2);
